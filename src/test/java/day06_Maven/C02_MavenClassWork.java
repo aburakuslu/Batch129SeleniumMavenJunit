@@ -62,11 +62,5 @@ public class C02_MavenClassWork {
 
         //Sayfayi kapatınız
         driver.close();
-
-
-
-
-
-
     }
 }

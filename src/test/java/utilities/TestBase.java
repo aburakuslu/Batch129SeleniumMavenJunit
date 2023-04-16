@@ -3,10 +3,13 @@ package utilities;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.After;
 import org.junit.Before;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -92,5 +95,28 @@ public abstract class TestBase {
     public static void switchToWindow(int pageIndex) {
         List<String> windowHandleList = new ArrayList<>(driver.getWindowHandles());
         driver.switchTo().window(windowHandleList.get(pageIndex));
+    }
+
+    //SwitchToWindow2
+    public static void window(int sayi){
+        driver.switchTo().window(driver.getWindowHandles().toArray()[sayi].toString());
+    }
+
+    //EXPLICIT WAIT METHODS
+
+    //Visible Wait
+    public static void visibleWait(WebElement element,int sayi){
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(sayi));
+        wait.until(ExpectedConditions.visibilityOf(element));
+    }
+    //VisibleElementLocator Wait
+    public static WebElement visibleWait(By locator, int sayi){
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(sayi));
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+    }
+    //Alert Wait
+    public static void alertWait(int sayi){
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(sayi));
+        wait.until(ExpectedConditions.alertIsPresent());
     }
 }

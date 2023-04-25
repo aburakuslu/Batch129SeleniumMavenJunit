@@ -29,6 +29,7 @@ public abstract class TestBase {
     protected static ExtentReports extentReports; //Raporlamayı başlatır
     protected static ExtentHtmlReporter extentHtmlReporter;//Raporu HTML formatında düzenler
     protected static ExtentTest extentTest;//Tüm test aşamalarında extentTest objesi ile bilgi ekleriz
+
     @Before
     public void setUp() throws Exception {
         WebDriverManager.chromedriver().setup();
@@ -38,13 +39,13 @@ public abstract class TestBase {
         //----------------------------------------------------------------------------------------
         extentReports = new ExtentReports();
         String tarih = new SimpleDateFormat("_hh_mm_ss_ddMMyyyy").format(new Date());
-        String dosyaYolu = "TestOutput/reports/extentReport_"+tarih+".html";
+        String dosyaYolu = "TestOutput/reports/extentReport_" + tarih + ".html";
         extentHtmlReporter = new ExtentHtmlReporter(dosyaYolu);
         extentReports.attachReporter(extentHtmlReporter);
 
         //Raporda gözükmesini istediğimiz bilgiler için
-        extentReports.setSystemInfo("Browser","Chrome");
-        extentReports.setSystemInfo("Tester","Burak");
+        extentReports.setSystemInfo("Browser", "Chrome");
+        extentReports.setSystemInfo("Tester", "Burak");
         extentHtmlReporter.config().setDocumentTitle("Extent Report");
         extentHtmlReporter.config().setReportName("Smoke Test Raporu");
 
@@ -120,24 +121,26 @@ public abstract class TestBase {
     }
 
     //SwitchToWindow2
-    public static void window(int sayi){
+    public static void window(int sayi) {
         driver.switchTo().window(driver.getWindowHandles().toArray()[sayi].toString());
     }
 
     //EXPLICIT WAIT METHODS
 
     //Visible Wait
-    public static void visibleWait(WebElement element,int sayi){
+    public static void visibleWait(WebElement element, int sayi) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(sayi));
         wait.until(ExpectedConditions.visibilityOf(element));
     }
+
     //VisibleElementLocator Wait
-    public static WebElement visibleWait(By locator, int sayi){
+    public static WebElement visibleWait(By locator, int sayi) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(sayi));
         return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
+
     //Alert Wait
-    public static void alertWait(int sayi){
+    public static void alertWait(int sayi) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(sayi));
         wait.until(ExpectedConditions.alertIsPresent());
     }
@@ -157,11 +160,51 @@ public abstract class TestBase {
     //WebElement Screenshot
     public static void webElementResmi(WebElement element) {
         String tarih = new SimpleDateFormat("_hh_mm_ss_ddMMyyyy").format(new Date());
-        String dosyaYolu = "TestOutput/webElementScreenshot"+tarih+".png";
+        String dosyaYolu = "TestOutput/webElementScreenshot" + tarih + ".png";
         try {
-            FileUtils.copyFile(element.getScreenshotAs(OutputType.FILE),new File(dosyaYolu));
+            FileUtils.copyFile(element.getScreenshotAs(OutputType.FILE), new File(dosyaYolu));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    //Bu method ile herhangi bir elemente JS Executer kullanarak tıklayabiliriz:
+    public void clickByJS(WebElement element) {
+        JavascriptExecutor jsExecuter = (JavascriptExecutor) driver;
+        jsExecuter.executeScript("arguments[0].click();", element);
+    }
+
+    //Bu method ile herhangi bir elemente JS Executor kullanarak ekranı kaydırma yapabilirim:
+    public void scrollIntoView(WebElement element) {
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("arguments[0].scrollIntoView(true);", element);
+    }
+
+    //Bu method ile sayfayı en alta kayıdırabilirim:
+    public void scrollEndJS() {
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("window.scrollTo(0,document.body.scrollHeight)");
+    }
+
+    //Bu method ile sayfayı en üste kayıdırabilirim:
+    public void scrollTopJS() {
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("window.scrollTo(0,-document.body.scrollHeight)");
+    }
+
+    //Bu method sendKeys() methodunun alternatifidir.
+    public void typeWithJS(String text, WebElement element) {
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("arguments[0].setAttribute('value','" + text + "')", element);
+    }
+
+    //Bu method ile attribute değerlerini alabilirim:
+    public void getValueByJS(String id, String attributeName) {
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        String attribute_Value = js.executeScript("return document.getElementById('" + id + "')." + attributeName).toString();
+        System.out.println("Attribute Value: = " + attribute_Value);
+        //NOT: document.querySelector("p").value;  -> TAG KULLANILABILIR
+        //document.querySelector(".example").value; -> CSS DEGERI KULLANILABILIR
+        //document.querySelector("#example").value; -> CSS DEGERI KULLANILABILIR
     }
 }
